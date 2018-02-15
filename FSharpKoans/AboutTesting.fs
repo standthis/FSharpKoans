@@ -21,7 +21,7 @@ show you, before you begin it.  That way, you will get the maximum amount of ben
 these exercises.  And if you have just fiddled to make it pass, try to figure out why that
 particular thing worked, and other things didn't.
 *)
-
+// ..
 // A module can hold type definitions AND bindings.
 module ``01: About Testing`` = 
     (*
