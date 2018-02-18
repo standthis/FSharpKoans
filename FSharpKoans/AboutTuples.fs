@@ -10,7 +10,7 @@ open NUnit.Framework
 *)
 
 module ``04: Tuples`` = 
-    [<Test>]
+    [<Test>]//
     let ``01 Creating tuples`` () = 
         let items = "apple", "dog"
         items |> should equal ("apple", __)
