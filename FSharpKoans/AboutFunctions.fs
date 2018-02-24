@@ -120,13 +120,14 @@ module ``08: Putting the Function into Functional Programming`` =
             f 2 |> should equal 1234
         ) |> should throw typeof<System.Exception>
 
+    // Patially specifying arguments is powerful. Make sure logic is correct
     [<Test>]
     let ``17 Partially specifying arguments (Part 1).`` () =
         // this shows you how you can partially specify particular arguments to
         // reuse functionality.  This technique is exceptionally flexible and often
         // seen in functional code, so you should try to understand it fully.
         let f animal noise = animal + " says " + noise
-        let kittehs = f "cat"
+        let kittehs = f "cat" // kittehs noise = "cat says " + noise
         kittehs "nyan" |> should equal "cat says nyan"
         
     [<Test>]
@@ -143,7 +144,10 @@ module ``08: Putting the Function into Functional Programming`` =
         // Extending a bit more, what do you do when you want to apply a function,
         // but modify the result before you give it back?
         let f animal noise = animal + " says " + noise
-        let cows = __ // <-- multiple words on this line, or you may want to make this a multi-line thing.  You MUST use `f`.
+        let cows = fun x -> 
+                    (f "cow" x) + ", de gozaru"
+                            // cows noise= cows says noise
+                  // <-- multiple words on this line, or you may want to make this a multi-line thing.  You MUST use `f`.
         cows "moo" |> should equal "cow says moo, de gozaru"
         cows "MOOooOO" |> should equal "cow says MOOooOO, de gozaru"
 
@@ -151,7 +155,7 @@ module ``08: Putting the Function into Functional Programming`` =
     let ``20 Aliasing a function`` () =
         let f x = x + 2
         let y = f
-        y 20 |> should equal ___
+        y 20 |> should equal 22
 
     [<Test>]
     let ``21 Getting closure`` () =
@@ -159,8 +163,8 @@ module ``08: Putting the Function into Functional Programming`` =
             let middle = (final - initial) / 2
             fun t -> t-middle, t+middle
         // note the number of inputs provided below.  Do you see why I can do this?
-        calculate 10 20 5 |> should equal __
-        calculate 0 600 250 |> should equal __
+        calculate 10 20 5 |> should equal (0, 10)
+        calculate 0 600 250 |> should equal (-50, 550)
 
     [<Test>]
     let ``22 Using a value defined in an inner scope`` () =
@@ -168,11 +172,10 @@ module ``08: Putting the Function into Functional Programming`` =
         let g t =
             let result =
                 match t%2 with
-                | 0 -> 10
-                | 1 -> 65
-            fun x -> result - x
-        g 5 8 |> should equal __
-        g 8 5 |> should equal __
+                | 0 -> 10 | 1 -> 65
+            fun x -> result - x 
+        g 5 8 |> should equal 57 // result - x -> 65 - 8 
+        g 8 5 |> should equal 5 // result - x -> 10 - 5
         // PS. I hope this one brought you some closure.
 
     [<Test>]
@@ -180,23 +183,27 @@ module ``08: Putting the Function into Functional Programming`` =
         let a = 25
         let f () = a + 10
         let a = 99
-        a |> should equal __
-        f () |> should equal __
+
+        a |> should equal 99
+        f () |> should equal 35
 
     (*
         The `rec` keyword exposes the function identifier for use inside the function.
         And that's literally all that it does - it has no other purpose whatsoever.
     *)
 
+    // Check this 
     [<Test>]
     let ``24 'rec' exposes the name of the function for use inside the function`` () =
         let rec isValid dino =
             match dino with
             | [] -> "All valid."
-            | "Thesaurus"::_ -> "A thesaurus isn't a dinosaur!"
-            | _::rest -> isValid rest
-        isValid ["Stegosaurus"; "Bambiraptor"] |> should equal __
-        isValid ["Triceratops"; "Thesaurus"; "Tyrannosaurus Rex"] |> should equal __
+            | "Thesaurus"::_ -> "A thesaurus isn't a dinosaur!" // on second iteration matches
+            | _::rest -> isValid rest // rest = [] upon second iteration 
+        //isValid ["Triceratops"; "Thesaurus"; "Tyrannosaurus Rex"]
+        //isValid ["Stegosaurus"; "Bambiraptor"] 
+        isValid ["Stegosaurus"; "Bambiraptor"] |> should equal "All valid."
+        isValid ["Triceratops"; "Thesaurus"; "Tyrannosaurus Rex"] |> should equal "A thesaurus isn't a dinosaur!"
 
     [<Test>]
     let ``25 Nesting functions`` () =
@@ -204,15 +211,15 @@ module ``08: Putting the Function into Functional Programming`` =
             let triple x = x * 3
             let addOne x = x + 1
             addOne (triple x) // see AboutCombiningFunctions.fs to see a better way of doing this
-        hailstone 5 |> should equal __
+        hailstone 5 |> should equal 16  // addOne (x * 3) -> (5 * 3) + 1 -> 16
 
     [<Test>]
     let ``26 Functions have types`` () =
         let a x y = x + y
         let b a b c d e = sprintf "%d %f %s %c %b" a b c d e
-        a |> should be ofType<FILL_ME_IN>
-        b |> should be ofType<FILL_ME_IN>
-        b 14 -8.7 |> should be ofType<FILL_ME_IN>
+        a |> should be ofType<int -> int -> int>
+        b |> should be ofType<int -> float -> string -> char -> bool -> string>
+        b 14 -8.7 |> should be ofType<string -> char -> bool -> string>
 
 
     [<Test>]
@@ -235,25 +242,28 @@ module ``08: Putting the Function into Functional Programming`` =
             | false -> "Slink"
         let check x =
             x % 2 <> 0 && x % 3 <> 0 && x % 5 <> 0 && x % 7 <> 0 && x % 11 <> 0
-        myIf (fun x -> x%2 = 0) |> should equal __
-        myIf (fun x -> x<35) |> should equal __
-        myIf (fun x -> x+2 = 0) |> should equal __
-        myIf (fun x -> x+2 = 21 || x-2 = 21) |> should equal __
-        myIf check |> should equal __
+            // 1 <> 0 && 2 <> 0 && 3 <> 0 && 2 <> 0 && 1 <> 0 
+            // true && true && true && true && true 
+            // true 
+        myIf (fun x -> x%2 = 0) |> should equal "Slink"
+        myIf (fun x -> x<35) |> should equal "Pink"
+        myIf (fun x -> x+2 = 0) |> should equal "Slink"
+        myIf (fun x -> x+2 = 21 || x-2 = 21) |> should equal "Pink"
+        myIf check |> should equal "Pink"
 
     [<Test>]
     let ``28 Type annotations for function types`` () =
-        let a (x:FILL_ME_IN) (y:FILL_ME_IN) = x + y
-        let b (x:FILL_ME_IN) (y:FILL_ME_IN) = x + y
+        let a (x:string) (y:string) = x + y
+        let b (x:float) (y:float) = x + y
         a |> should be ofType<string -> string -> string>
         b |> should be ofType<float -> float -> float>
-        a __ __ |> should equal "skipping"
-        b __ __ |> should equal 1.02
+        a "skip" "ping" |> should equal "skipping"
+        b 1.00 0.02 |> should equal 1.02
 
     [<Test>]
     let ``29 We can use a type annotation for a function's output`` () =
-        let k a b : FILL_ME_IN = a * b
-        k __ __ |> should equal 15.0 
+        let k a b : float = a * b
+        k 3.0 5.0 |> should equal 15.0 
 
     (*
         Sometimes you want to force type-resolution to occur at a call-site.
@@ -264,10 +274,10 @@ module ``08: Putting the Function into Functional Programming`` =
     // see: https://msdn.microsoft.com/en-us/library/dd548047.aspx
     [<Test>]
     let ``30 The 'inline' keyword forces type-resolution at callsite`` () =
-        let (*REPLACE_THIS_COMMENT_WITH_KEYWORD*) a x y = x + y
+        let inline a x y = x + y
         a 6 7 |> should equal 13 // expected: an int
-        a __ __ |> should equal 1.2 // expected: a float
-        a __ __ |> should equal "beebop" // expected: a string
+        a 1.0 0.2 |> should equal 1.2 // expected: a float
+        a "bee" "bop" |> should equal "beebop" // expected: a string
 
    (*
        Did you know that operators like +, -, =, >, and so on, are actually
@@ -276,9 +286,9 @@ module ``08: Putting the Function into Functional Programming`` =
 
     [<Test>]
     let ``31 Operators are functions in disguise`` () =
-        (+) 5 8 |> should equal __
-        (-) 3 5 |> should equal __
-        (/) 12 4 |> should equal __
-        (=) 93.1 93.12 |> should equal __
-        (<) "hey" "jude" |> should equal __
+        (+) 5 8 |> should equal 13
+        (-) 3 5 |> should equal -2
+        (/) 12 4 |> should equal 3
+        (=) 93.1 93.12 |> should equal false
+        (<) "hey" "jude" |> should equal true
         // ... and other operators: >, <=, >=, <>, %, ...
