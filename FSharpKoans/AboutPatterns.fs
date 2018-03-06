@@ -37,7 +37,7 @@ module ``09: Advanced pattern-matching`` =
         let f input =
             match input with
             | 0,0 -> "Both 0"
-            | (a,0) | (0,a) -> sprintf "One 0, one %d" a
+            | a,0 | 0,a -> sprintf "One 0, one %d" a
             | _ -> "No 0"
         f (3,0) |> should equal "One 0, one 3"
         f (0, 4) |> should equal "One 0, one 4"

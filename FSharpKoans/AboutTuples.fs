@@ -36,7 +36,7 @@ module ``04: Tuples`` =
             | name, "veggies" -> name + " likes vegetables"
             | name, "fish" -> name + " likes seafood"
             | name, "chicken" -> name + " crows about their food"
-            | name, "pasta" -> name + " loves to eat " + "pasta"
+            | name, _ -> name + " loves to eat " + "pasta"
         result |> should equal "Teresa loves to eat pasta"   
    
     [<Test>]

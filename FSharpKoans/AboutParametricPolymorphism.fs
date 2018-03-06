@@ -53,7 +53,7 @@ module ``11: Parametric polymorphism`` =
 
     [<Test>]
     let ``02 Defining a generic function`` () =
-        let f x y = (x, y, y)
+        let f x y = x, y, y
         f 4 5 |> should equal (4, 5, 5)
         f "k" 'p' |> should equal ("k", 'p', 'p')
 
@@ -97,10 +97,10 @@ module ``11: Parametric polymorphism`` =
         a |> should be ofType<GenericDiscriminatedUnionExample<float,int>>
         b |> should be ofType<GenericDiscriminatedUnionExample<'a,bool>>
 
-    type MyDiscriminatedUnion<'a> = 
+    type MyDiscriminatedUnion<'a, 'b> = 
     | Furoth of 'a
     | Fevi
-    | Sxi of 'a
+    | Sxi of 'b
 
     [<Test>]
     let ``05 Creating a generic discriminated union (Part 2).`` () =

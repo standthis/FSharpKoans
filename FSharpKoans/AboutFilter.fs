@@ -12,10 +12,10 @@ module ``16: Filtering a list`` =
         let filter (xs : int list) : int list =
             let rec fil xs out= // write a function to filter for odd elements only.
                 match xs with
-                | [] -> out
+                | [] -> List.rev out
                 | a::rest -> 
                     match a%2 with
-                    | 1 -> fil rest (out@[a])
+                    | 1 -> fil rest (a::out)   
                     | _ -> fil rest out
             fil xs [] 
         filter [1; 2; 3; 4] |> should equal [1; 3]
@@ -37,10 +37,10 @@ module ``16: Filtering a list`` =
         let filter (f : 'a -> bool) (xs : 'a list) : 'a list =
             let rec fil xs out =  // write a function which filters based on the specified criteria
                 match xs with 
-                | [] -> out 
+                | [] -> List.rev out 
                 | a::rest -> 
                     match f a with 
-                    | true -> fil rest (out@[a])
+                    | true -> fil rest (a::out)
                     | _ -> fil rest out 
             fil xs []                    
         filter (fun x -> x > 19) [9; 5; 23; 66; 4] 

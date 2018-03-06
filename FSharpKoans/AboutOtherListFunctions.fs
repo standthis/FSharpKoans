@@ -38,11 +38,11 @@ module ``19: Other list functions`` =
         let partition (f : 'a -> bool) (xs : 'a list) : ('a list) * ('a list) =
             let rec part xs j k   =   // Does this: https://msdn.microsoft.com/en-us/library/ee353782.aspx
                 match xs with 
-                | [] -> j,k
+                | [] -> List.rev j, List.rev k
                 | a::rest -> 
                     match f a with 
-                    | true -> part rest (j@[a]) k 
-                    | _ -> part rest j (k@[a])
+                    | true -> part rest (a::j) k 
+                    | _ -> part rest j (a::k)
             part xs [] []             
         let a, b = partition (fun x -> x%2=0) [1;2;3;4;5;6;7;8;9;10]
         a |> should equal [2;4;6;8;10]
@@ -60,8 +60,8 @@ module ``19: Other list functions`` =
         let init (n : int) (f : int -> 'a) : 'a list =
             let rec create acc xs = // Does this: https://msdn.microsoft.com/en-us/library/ee370497.aspx
                 match acc = n with 
-                | true -> xs
-                | _ -> create (acc + 1) (xs@[f acc])
+                | true -> List.rev xs
+                | _ -> create (acc + 1) (f acc::xs)
             create 0 [] 
         init 10 (fun x -> x*2) |> should equal [0;2;4;6;8;10;12;14;16;18]
         init 4 (sprintf "(%d)") |> should equal ["(0)";"(1)";"(2)";"(3)"]
@@ -124,11 +124,11 @@ module ``19: Other list functions`` =
         let choose (p : 'a -> 'b option) (xs : 'a list) : 'b list =
             let rec ch xs out =  // Does this: https://msdn.microsoft.com/en-us/library/ee353456.aspx
                 match xs with
-                | [] -> out
+                | [] -> List.rev out
                 | a::rest ->
                     match p a with //b=p(a)
                     | None -> ch rest out
-                    | Some b -> ch rest (out@[b])
+                    | Some b -> ch rest (b::out)
             ch xs []
         let f x =
             match x<=45 with
@@ -149,8 +149,8 @@ module ``19: Other list functions`` =
         let mapi (f : int -> 'a -> 'b) (xs : 'a list) : 'b list =
             let rec r xs out acc =                     // Does this: https://msdn.microsoft.com/en-us/library/ee353425.aspx
                 match xs with 
-                | [] -> out
-                | a::rest -> r rest (out@[f acc a]) (acc + 1) 
+                | [] -> List.rev out
+                | a::rest -> r rest (f acc a::out) (acc + 1) 
             r xs [] 0
                 
         mapi (fun i x -> -i, x+1) [9;8;7;6] |> should equal [0,10; -1,9; -2,8; -3,7]

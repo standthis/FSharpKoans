@@ -10,8 +10,8 @@ module ``15: Applying a map to a list`` =
         let map (xs : int list) : int list =
             let rec addOne xs out = // write a function which adds 1 to each element
                 match xs with
-                | [] -> out
-                | a::rest -> addOne rest (out@[a+1])
+                | [] -> List.rev out
+                | a::rest -> addOne rest (a+1::out)
             addOne xs []
         map [1; 2; 3; 4] |> should equal [2; 3; 4; 5]
         map [9; 8; 7; 6] |> should equal [10; 9; 8; 7]
@@ -24,8 +24,8 @@ module ``15: Applying a map to a list`` =
         let map (xs : int list) : int list =
             let rec Dub xs out  = // write a function which doubles each element
                 match xs with 
-                | [] -> out
-                | a::rest -> Dub rest (out@[a*2])
+                | [] -> List.rev out
+                | a::rest -> Dub rest (a*2::out)
             Dub xs [] 
         map [1; 2; 3; 4] |> should equal [2; 4; 6; 8]
         map [9; 8; 7; 6] |> should equal [18; 16; 14; 12]
@@ -47,8 +47,8 @@ module ``15: Applying a map to a list`` =
         let map (f : 'a -> 'b) (xs : 'a list) : 'b list =
             let rec funMap xs out =
                 match xs with
-                | [] -> out
-                | a::rest -> funMap rest (out@[f a])
+                | [] -> List.rev out
+                | a::rest -> funMap rest (f a::out)
             funMap xs []
             // write a map which applies f to each element
         map (fun x -> x+1) [9;8;7] |> should equal [10;9;8]

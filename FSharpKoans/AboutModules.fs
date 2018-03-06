@@ -4,7 +4,7 @@ open NUnit.Framework
 module MushroomKingdom = 
     type Power = 
     | None
-    | Mushroom
+    | Mushroom 
     | Star
     | FireFlower
    
@@ -39,7 +39,7 @@ module ``22: Modules`` =
    [<Test>]
    let ``02 Modules can contain functions`` () = 
       let superMario = MushroomKingdom.powerUp MushroomKingdom.Mario
-      superMario.Power |> should equal MushroomKingdom.Power.Mushroom
+      superMario.Power |> should equal MushroomKingdom.Mushroom
 
 // Make sure your eyes don't skip over the next line of code, OK?
 // It's an important line!

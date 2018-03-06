@@ -44,7 +44,7 @@ module ``13: Finding the length of a list`` =
             let rec innerF xs acc =
                 match xs with
                 | [] -> acc
-                | _::rest -> innerF rest (acc+1)
+                | _::rest -> innerF rest acc+1
             innerF xs 0 // write a function to find the length of a list
         length [9;8;7] |> should equal 3
         length [] |> should equal 0
